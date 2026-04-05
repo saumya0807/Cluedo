@@ -1,6 +1,9 @@
 import { useState, useRef } from 'react'
 import { PLAYER_COLORS, PLAYER_COLORS_LIGHT } from '../constants'
 
+const FONT_PRIMARY = "'Coconat', Georgia, serif"
+const FONT_BODY    = "'Inter', system-ui, sans-serif"
+
 const LEGEND_ITEMS_DARK = [
   { key: 'tick',  preview: '✓',   bg: '#052e16', color: '#4ade80', label: 'In hand / confirmed' },
   { key: 'cross', preview: '✗',   bg: '#1f0a0a', color: '#f87171', label: 'Out / eliminated' },
@@ -20,7 +23,9 @@ const LEGEND_ITEMS_LIGHT = [
   { key: 'empty', preview: '·',   bg: '#e8e5e3', color: '#78716c', label: 'Unknown / clear' },
 ]
 
-export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReorderPlayers, onReset, lightMode, onLightModeToggle }) {
+const TOGGLEABLE_KEYS = new Set(['q', 'd1', 'd2', 'd3'])
+
+export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReorderPlayers, onReset, lightMode, onLightModeToggle, enabledStates = { q: true, d1: true, d2: true, d3: true }, onToggleState }) {
   const [newName, setNewName] = useState('')
   const [confirmReset, setConfirmReset] = useState(false)
   const [legendOpen, setLegendOpen] = useState(false)
@@ -89,7 +94,7 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
   return (
     <div
       style={{
-        position: 'absolute', top: '56px', left: 0, width: '280px',
+        position: 'absolute', top: '56px', right: 0, width: '280px',
         background: bg, border, borderTop: 'none',
         borderRadius: '0 0 12px 12px', zIndex: 99,
         boxShadow: '4px 8px 32px rgba(0,0,0,0.45)',
@@ -100,7 +105,7 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
     >
       {/* Players section */}
       <div style={{ padding: '14px 16px' }}>
-        <div style={{ fontSize: '11px', fontFamily: 'Georgia, serif', letterSpacing: '0.12em', textTransform: 'uppercase', color: textMuted, marginBottom: '10px' }}>
+        <div style={{ fontSize: '11px', fontFamily: FONT_PRIMARY, letterSpacing: '0.12em', textTransform: 'uppercase', color: textMuted, marginBottom: '10px' }}>
           Players
         </div>
         <div
@@ -146,7 +151,7 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
                     <span style={{ width: '17px', flexShrink: 0 }} />
                   )}
                   <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: colors[idx % colors.length], flexShrink: 0 }} />
-                  <span style={{ flex: 1, fontSize: '14px', fontFamily: 'Georgia, serif', color: textMain }}>
+                  <span style={{ flex: 1, fontSize: '14px', fontFamily: FONT_BODY, color: textMain }}>
                     {p.name}
                   </span>
                   {!p.isMe && (
@@ -168,17 +173,18 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
             )
           })}
         </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '8px', width: '100%', boxSizing: 'border-box' }}>
           <input
             style={{
               background: inputBg,
               border: `1px solid ${inputBorder}`,
               borderRadius: '6px',
               color: textMain,
-              fontFamily: 'Georgia, serif',
+              fontFamily: FONT_BODY,
               fontSize: '14px',
               padding: '6px 10px',
               flex: 1,
+              minWidth: 0,
               outline: 'none',
               transition: 'box-shadow 0.15s',
             }}
@@ -199,7 +205,7 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
               border: `1px solid ${lightMode ? '#44403c' : '#57534e'}`,
               color: lightMode ? '#f5f3f0' : '#e7e5e4',
               borderRadius: '6px', padding: '6px 12px',
-              cursor: 'pointer', fontFamily: 'Georgia, serif', fontSize: '13px', whiteSpace: 'nowrap',
+              cursor: 'pointer', fontFamily: FONT_BODY, fontSize: '13px', whiteSpace: 'nowrap',
             }}
           >
             + Add
@@ -221,28 +227,58 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
             cursor: 'pointer', padding: 0, marginBottom: legendOpen ? '10px' : 0,
           }}
         >
-          <span style={{ fontSize: '11px', fontFamily: 'Georgia, serif', letterSpacing: '0.12em', textTransform: 'uppercase', color: textMuted }}>
+          <span style={{ fontSize: '11px', fontFamily: FONT_PRIMARY, letterSpacing: '0.12em', textTransform: 'uppercase', color: textMuted }}>
             Legend
           </span>
           <span style={{ fontSize: '11px', color: textDim }}>{legendOpen ? '▲' : '▼'}</span>
         </button>
         {legendOpen && (
           <div id="legend-content" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {LEGEND_ITEMS.map(item => (
-              <div key={item.key} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{
-                  width: '32px', height: '24px',
-                  background: item.bg,
-                  border: `1px solid ${lightMode ? '#d1d0ce' : '#44403c'}`,
-                  borderRadius: '4px',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: item.color, fontSize: '11px', fontWeight: 'bold', flexShrink: 0,
-                }}>
-                  {item.preview}
+            {LEGEND_ITEMS.map(item => {
+              const isToggleable = TOGGLEABLE_KEYS.has(item.key)
+              const isOn = !isToggleable || (enabledStates?.[item.key] !== false)
+              return (
+                <div key={item.key} style={{ display: 'flex', alignItems: 'center', gap: '10px', opacity: isToggleable && !isOn ? 0.45 : 1, transition: 'opacity 0.2s' }}>
+                  <div style={{
+                    width: '32px', height: '24px',
+                    background: item.bg,
+                    border: `1px solid ${lightMode ? '#d1d0ce' : '#44403c'}`,
+                    borderRadius: '4px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: item.color, fontSize: '11px', fontWeight: 'bold', flexShrink: 0,
+                  }}>
+                    {item.preview}
+                  </div>
+                  <span style={{ flex: 1, fontSize: '13px', color: textDim, fontFamily: FONT_BODY }}>{item.label}</span>
+                  {isToggleable && (
+                    <button
+                      role="switch"
+                      aria-checked={isOn}
+                      aria-label={`${isOn ? 'Disable' : 'Enable'} ${item.label} state`}
+                      onClick={() => onToggleState?.(item.key)}
+                      style={{
+                        flexShrink: 0,
+                        width: '28px', height: '16px', borderRadius: '8px',
+                        background: isOn ? '#4ade80' : (lightMode ? '#c4c0bb' : '#44403c'),
+                        border: 'none', position: 'relative',
+                        cursor: 'pointer', padding: 0, outline: 'none',
+                        transition: 'background 0.2s',
+                      }}
+                      onFocus={e => e.target.style.boxShadow = `0 0 0 2px ${lightMode ? '#1c1917' : '#e7e5e4'}`}
+                      onBlur={e => e.target.style.boxShadow = 'none'}
+                    >
+                      <div style={{
+                        position: 'absolute', top: '2px',
+                        left: isOn ? '14px' : '2px',
+                        width: '12px', height: '12px', borderRadius: '50%',
+                        background: '#fff', transition: 'left 0.2s',
+                        pointerEvents: 'none',
+                      }} />
+                    </button>
+                  )}
                 </div>
-                <span style={{ fontSize: '13px', color: textDim, fontFamily: 'Georgia, serif' }}>{item.label}</span>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>
@@ -251,7 +287,7 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
 
       {/* Light mode toggle */}
       <div style={{ padding: '14px 16px' }}>
-        <div style={{ fontSize: '11px', fontFamily: 'Georgia, serif', letterSpacing: '0.12em', textTransform: 'uppercase', color: textMuted, marginBottom: '10px' }}>
+        <div style={{ fontSize: '11px', fontFamily: FONT_PRIMARY, letterSpacing: '0.12em', textTransform: 'uppercase', color: textMuted, marginBottom: '10px' }}>
           Appearance
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
@@ -295,14 +331,14 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
               border: `1px solid ${lightMode ? '#dc2626' : '#dc2626'}`,
               color: lightMode ? '#dc2626' : '#f87171',
               borderRadius: '8px', padding: '8px 16px',
-              cursor: 'pointer', fontFamily: 'Georgia, serif', fontSize: '14px', width: '100%',
+              cursor: 'pointer', fontFamily: FONT_BODY, fontSize: '14px', width: '100%',
             }}
           >
             Reset board
           </button>
         ) : (
           <div>
-            <p style={{ fontSize: '13px', color: textDim, fontFamily: 'Georgia, serif', margin: '0 0 10px 0' }}>
+            <p style={{ fontSize: '13px', color: textDim, fontFamily: FONT_BODY, margin: '0 0 10px 0' }}>
               Clear all cells and notes?
             </p>
             <div style={{ display: 'flex', gap: '8px' }}>
@@ -313,7 +349,7 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
                   border: '1px solid #dc2626',
                   color: lightMode ? '#b91c1c' : '#fca5a5',
                   borderRadius: '8px', padding: '8px 16px',
-                  cursor: 'pointer', fontFamily: 'Georgia, serif', fontSize: '13px', flex: 1,
+                  cursor: 'pointer', fontFamily: FONT_BODY, fontSize: '13px', flex: 1,
                 }}
               >
                 Yes, reset
@@ -325,7 +361,7 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
                   border: `1px solid ${lightMode ? '#c4c0bb' : '#57534e'}`,
                   color: lightMode ? '#57534e' : '#a8a29e',
                   borderRadius: '8px', padding: '8px 16px',
-                  cursor: 'pointer', fontFamily: 'Georgia, serif', fontSize: '13px', flex: 1,
+                  cursor: 'pointer', fontFamily: FONT_BODY, fontSize: '13px', flex: 1,
                 }}
               >
                 Cancel

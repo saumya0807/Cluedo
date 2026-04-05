@@ -1,6 +1,9 @@
 import { NormalCell, NoteCell } from './Cell'
 import { PLAYER_COLORS, PLAYER_COLORS_LIGHT, WHO, WHAT, WHERE } from '../constants'
 
+const FONT_PRIMARY = "'Coconat', Georgia, serif"
+const FONT_BODY    = "'Inter', system-ui, sans-serif"
+
 const SECTIONS = [
   { label: 'Who?',   color: '#ef4444', lightColor: '#b91c1c', items: WHO },
   { label: 'What?',  color: '#f97316', lightColor: '#c2410c', items: WHAT },
@@ -37,7 +40,7 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
             >
               <span style={{
                 fontSize: '11px',
-                fontFamily: 'Georgia, serif',
+                fontFamily: FONT_BODY,
                 color: colors[idx % colors.length],
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
@@ -64,7 +67,7 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
                 <h2 style={{
                   margin: 0,
                   fontSize: '13px',
-                  fontFamily: 'Georgia, serif',
+                  fontFamily: FONT_PRIMARY,
                   fontWeight: 'bold',
                   color: headerColor,
                   letterSpacing: '0.06em',
