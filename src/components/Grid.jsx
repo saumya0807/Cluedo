@@ -21,7 +21,7 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
   const stickyBg = lightMode ? '#f0ede9' : '#111111'
 
   return (
-    <div style={{ padding: '16px 0 8px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+    <div style={{ padding: '8px 0 8px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
       <div style={{ display: 'inline-block', minWidth: '100%', paddingRight: '12px' }}>
 
         {/* Player name header */}
@@ -33,7 +33,7 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
             gap: `${CELL_GAP}px`,
           }}
         >
-          {/* Sticky spacer aligned with label column */}
+          {/* Sticky spacer — covers label area when cells scroll horizontally */}
           <div style={{
             width: `${LABEL_W}px`, flexShrink: 0,
             position: 'sticky', left: 0, zIndex: 3,
