@@ -1,16 +1,36 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import '@fontsource/inter/400.css'
+import '@fontsource/inter/500.css'
+import '@fontsource/inter/600.css'
 import App from './App'
 
 // Global baseline styles
 const style = document.createElement('style')
 style.textContent = `
+  @font-face {
+    font-family: 'Coconat';
+    src: url('/fonts/Coconat-Regular.woff2') format('woff2'),
+         url('/fonts/Coconat-Regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Coconat';
+    src: url('/fonts/Coconat-Bold.woff2') format('woff2'),
+         url('/fonts/Coconat-Bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
   body {
     background: #0d0d0d;
     color: #e7e5e4;
-    font-family: Georgia, serif;
+    font-family: 'Inter', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     overscroll-behavior: none;
   }

@@ -1,6 +1,9 @@
 import { useState, useRef } from 'react'
 import { PLAYER_COLORS, PLAYER_COLORS_LIGHT } from '../constants'
 
+const FONT_PRIMARY = "'Coconat', Georgia, serif"
+const FONT_BODY    = "'Inter', system-ui, sans-serif"
+
 const LEGEND_ITEMS_DARK = [
   { key: 'tick',  preview: '✓',   bg: '#052e16', color: '#4ade80', label: 'In hand / confirmed' },
   { key: 'cross', preview: '✗',   bg: '#1f0a0a', color: '#f87171', label: 'Out / eliminated' },
@@ -102,7 +105,7 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
     >
       {/* Players section */}
       <div style={{ padding: '14px 16px' }}>
-        <div style={{ fontSize: '11px', fontFamily: 'Georgia, serif', letterSpacing: '0.12em', textTransform: 'uppercase', color: textMuted, marginBottom: '10px' }}>
+        <div style={{ fontSize: '11px', fontFamily: FONT_PRIMARY, letterSpacing: '0.12em', textTransform: 'uppercase', color: textMuted, marginBottom: '10px' }}>
           Players
         </div>
         <div
@@ -148,7 +151,7 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
                     <span style={{ width: '17px', flexShrink: 0 }} />
                   )}
                   <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: colors[idx % colors.length], flexShrink: 0 }} />
-                  <span style={{ flex: 1, fontSize: '14px', fontFamily: 'Georgia, serif', color: textMain }}>
+                  <span style={{ flex: 1, fontSize: '14px', fontFamily: FONT_BODY, color: textMain }}>
                     {p.name}
                   </span>
                   {!p.isMe && (
@@ -177,7 +180,7 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
               border: `1px solid ${inputBorder}`,
               borderRadius: '6px',
               color: textMain,
-              fontFamily: 'Georgia, serif',
+              fontFamily: FONT_BODY,
               fontSize: '14px',
               padding: '6px 10px',
               flex: 1,
@@ -201,7 +204,7 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
               border: `1px solid ${lightMode ? '#44403c' : '#57534e'}`,
               color: lightMode ? '#f5f3f0' : '#e7e5e4',
               borderRadius: '6px', padding: '6px 12px',
-              cursor: 'pointer', fontFamily: 'Georgia, serif', fontSize: '13px', whiteSpace: 'nowrap',
+              cursor: 'pointer', fontFamily: FONT_BODY, fontSize: '13px', whiteSpace: 'nowrap',
             }}
           >
             + Add
@@ -223,7 +226,7 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
             cursor: 'pointer', padding: 0, marginBottom: legendOpen ? '10px' : 0,
           }}
         >
-          <span style={{ fontSize: '11px', fontFamily: 'Georgia, serif', letterSpacing: '0.12em', textTransform: 'uppercase', color: textMuted }}>
+          <span style={{ fontSize: '11px', fontFamily: FONT_PRIMARY, letterSpacing: '0.12em', textTransform: 'uppercase', color: textMuted }}>
             Legend
           </span>
           <span style={{ fontSize: '11px', color: textDim }}>{legendOpen ? '▲' : '▼'}</span>
@@ -245,7 +248,7 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
                   }}>
                     {item.preview}
                   </div>
-                  <span style={{ flex: 1, fontSize: '13px', color: textDim, fontFamily: 'Georgia, serif' }}>{item.label}</span>
+                  <span style={{ flex: 1, fontSize: '13px', color: textDim, fontFamily: FONT_BODY }}>{item.label}</span>
                   {isToggleable && (
                     <button
                       role="switch"
@@ -283,7 +286,7 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
 
       {/* Light mode toggle */}
       <div style={{ padding: '14px 16px' }}>
-        <div style={{ fontSize: '11px', fontFamily: 'Georgia, serif', letterSpacing: '0.12em', textTransform: 'uppercase', color: textMuted, marginBottom: '10px' }}>
+        <div style={{ fontSize: '11px', fontFamily: FONT_PRIMARY, letterSpacing: '0.12em', textTransform: 'uppercase', color: textMuted, marginBottom: '10px' }}>
           Appearance
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
@@ -327,14 +330,14 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
               border: `1px solid ${lightMode ? '#dc2626' : '#dc2626'}`,
               color: lightMode ? '#dc2626' : '#f87171',
               borderRadius: '8px', padding: '8px 16px',
-              cursor: 'pointer', fontFamily: 'Georgia, serif', fontSize: '14px', width: '100%',
+              cursor: 'pointer', fontFamily: FONT_BODY, fontSize: '14px', width: '100%',
             }}
           >
             Reset board
           </button>
         ) : (
           <div>
-            <p style={{ fontSize: '13px', color: textDim, fontFamily: 'Georgia, serif', margin: '0 0 10px 0' }}>
+            <p style={{ fontSize: '13px', color: textDim, fontFamily: FONT_BODY, margin: '0 0 10px 0' }}>
               Clear all cells and notes?
             </p>
             <div style={{ display: 'flex', gap: '8px' }}>
@@ -345,7 +348,7 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
                   border: '1px solid #dc2626',
                   color: lightMode ? '#b91c1c' : '#fca5a5',
                   borderRadius: '8px', padding: '8px 16px',
-                  cursor: 'pointer', fontFamily: 'Georgia, serif', fontSize: '13px', flex: 1,
+                  cursor: 'pointer', fontFamily: FONT_BODY, fontSize: '13px', flex: 1,
                 }}
               >
                 Yes, reset
@@ -357,7 +360,7 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
                   border: `1px solid ${lightMode ? '#c4c0bb' : '#57534e'}`,
                   color: lightMode ? '#57534e' : '#a8a29e',
                   borderRadius: '8px', padding: '8px 16px',
-                  cursor: 'pointer', fontFamily: 'Georgia, serif', fontSize: '13px', flex: 1,
+                  cursor: 'pointer', fontFamily: FONT_BODY, fontSize: '13px', flex: 1,
                 }}
               >
                 Cancel

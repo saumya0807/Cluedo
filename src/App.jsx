@@ -175,7 +175,7 @@ export default function App() {
       ? '#f0ede9'
       : 'radial-gradient(ellipse at top left, #1a0a05 0%, #0d0d0d 55%, #05050f 100%)',
     color: lightMode ? '#1c1917' : '#e7e5e4',
-    fontFamily: 'Georgia, serif',
+    fontFamily: "'Inter', system-ui, sans-serif",
     display: 'flex',
     flexDirection: 'column',
   }

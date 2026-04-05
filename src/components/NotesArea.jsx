@@ -6,7 +6,7 @@ export default function NotesArea({ notes, onChange, lightMode }) {
 
   const labelStyle = {
     fontSize: '12px',
-    fontFamily: 'Georgia, serif',
+    fontFamily: "'Inter', system-ui, sans-serif",
     color: '#78716c',
     letterSpacing: '0.08em',
     marginBottom: '6px',
