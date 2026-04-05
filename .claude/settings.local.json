@@ -9,7 +9,11 @@
       "Bash(cp temp-react/eslint.config.js .)",
       "Bash(cp -r temp-react/public .)",
       "Bash(npm install:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(where npm:*)",
+      "Read(//usr/bin/**)",
+      "Read(//usr/local/bin/**)"
     ]
   }
 }

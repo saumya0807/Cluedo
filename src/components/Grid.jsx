@@ -130,12 +130,14 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
                     <NoteCell
                       key={p.id}
                       noteArr={noteGrid[p.id]?.[item]}
+                      state={grid[p.id]?.[item] ?? null}
                       onClickSub={(subIdx) => onCycleNoteCell(p.id, item, subIdx)}
                     />
                   ) : (
                     <NormalCell
                       key={p.id}
                       state={grid[p.id]?.[item] ?? null}
+                      noteArr={noteGrid[p.id]?.[item]}
                       onClick={() => onCycleCell(p.id, item)}
                     />
                   )
