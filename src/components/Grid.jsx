@@ -113,14 +113,14 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
                         position: 'sticky', left: 0, zIndex: 2,
                         background: stickyBg,
                         fontSize: '12px', fontFamily: 'monospace',
-                        color: isTicked ? tickColor : (lightMode ? '#57534e' : '#a8a29e'),
+                        color: isTicked ? (lightMode ? '#b0ada9' : '#57534e') : (lightMode ? '#57534e' : '#a8a29e'),
                         textAlign: 'left', paddingLeft: '12px',
                         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                         lineHeight: '54px',
                         textDecoration: isTicked ? 'line-through' : 'none',
-                        textDecorationColor: isTicked ? tickColor : 'transparent',
+                        textDecorationColor: isTicked ? (lightMode ? '#b0ada9' : '#57534e') : 'transparent',
+                        textDecorationThickness: '2px',
                         transition: 'color 0.2s, text-decoration 0.2s',
-                        opacity: isTicked ? 0.6 : 1,
                       }}
                     >
                       {item}
