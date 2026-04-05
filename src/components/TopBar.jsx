@@ -1,105 +1,77 @@
 export default function TopBar({ menuOpen, onMenuToggle, noteMode, onNoteModeToggle, lightMode }) {
-  const barStyle = {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: '56px',
-    background: lightMode ? '#f5f3f0' : '#1c1917',
-    borderBottom: lightMode ? '1px solid #d6d3d1' : '1px solid #44403c',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '0 12px',
-    zIndex: 100,
-  }
-
-  const burgerStyle = {
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '22px',
-    color: lightMode ? '#1c1917' : '#e7e5e4',
-    width: '40px',
-    height: '40px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: '6px',
-    transition: 'background 0.15s',
-    padding: 0,
-  }
-
-  const titleStyle = {
-    fontFamily: 'Georgia, serif',
-    fontSize: '18px',
-    fontWeight: 'bold',
-    letterSpacing: '0.18em',
-    textTransform: 'uppercase',
-    color: lightMode ? '#1c1917' : '#e7e5e4',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    userSelect: 'none',
-  }
-
-  const noteToggleStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    background: noteMode ? '#1c1200' : 'none',
-    border: noteMode ? '1px solid #92400e' : (lightMode ? '1px solid #c4c0bb' : '1px solid #44403c'),
-    borderRadius: '20px',
-    padding: '4px 10px 4px 8px',
-    cursor: 'pointer',
-    color: noteMode ? '#fbbf24' : (lightMode ? '#78716c' : '#a8a29e'),
-    fontSize: '13px',
-    fontFamily: 'Georgia, serif',
-    transition: 'all 0.2s',
-    userSelect: 'none',
-  }
-
-  const pillTrack = {
-    width: '32px',
-    height: '18px',
-    borderRadius: '9px',
-    background: noteMode ? '#d97706' : '#44403c',
-    position: 'relative',
-    transition: 'background 0.2s',
-    flexShrink: 0,
-  }
-
-  const pillThumb = {
-    position: 'absolute',
-    top: '2px',
-    left: noteMode ? '16px' : '2px',
-    width: '14px',
-    height: '14px',
-    borderRadius: '50%',
-    background: '#fff',
-    transition: 'left 0.2s',
-  }
+  const bg        = lightMode ? '#f5f3f0' : '#1c1917'
+  const borderBot = lightMode ? '1px solid #d6d3d1' : '1px solid #44403c'
+  const textColor = lightMode ? '#1c1917' : '#e7e5e4'
 
   return (
-    <div style={barStyle}>
+    <div style={{
+      position: 'fixed', top: 0, left: 0, right: 0, height: '56px',
+      background: bg, borderBottom: borderBot,
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      padding: '0 12px', zIndex: 100,
+    }}>
       <button
-        style={burgerStyle}
         onClick={onMenuToggle}
-        aria-label="Toggle menu"
+        aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+        aria-expanded={menuOpen}
+        aria-haspopup="dialog"
+        style={{
+          background: 'none', border: 'none',
+          cursor: 'pointer', fontSize: '22px', color: textColor,
+          width: '40px', height: '40px',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          borderRadius: '6px',
+          transition: 'background 0.15s, box-shadow 0.12s',
+          padding: 0, outline: 'none',
+        }}
+        onFocus={e => e.target.style.boxShadow = `0 0 0 2px ${lightMode ? '#1c1917' : '#e7e5e4'}`}
+        onBlur={e => e.target.style.boxShadow = 'none'}
       >
         <span style={{ display: 'inline-block', transition: 'transform 0.2s', transform: menuOpen ? 'rotate(90deg)' : 'none' }}>
           {menuOpen ? '✕' : '☰'}
         </span>
       </button>
 
-      <div style={titleStyle}>
-        <span>CLUEDO</span>
+      <div style={{
+        fontFamily: 'Georgia, serif', fontSize: '18px', fontWeight: 'bold',
+        letterSpacing: '0.18em', textTransform: 'uppercase',
+        color: textColor, userSelect: 'none',
+      }}>
+        CLUEDO
       </div>
 
-      <button style={noteToggleStyle} onClick={onNoteModeToggle} aria-label="Toggle note mode">
+      <button
+        onClick={onNoteModeToggle}
+        role="switch"
+        aria-checked={noteMode}
+        aria-label="Note mode"
+        style={{
+          display: 'flex', alignItems: 'center', gap: '8px',
+          background: noteMode ? (lightMode ? '#fef3c7' : '#1c1200') : 'none',
+          border: noteMode
+            ? '1px solid #d97706'
+            : (lightMode ? '1px solid #c4c0bb' : '1px solid #44403c'),
+          borderRadius: '20px', padding: '4px 10px 4px 8px',
+          cursor: 'pointer',
+          color: noteMode ? (lightMode ? '#92400e' : '#fbbf24') : (lightMode ? '#57534e' : '#a8a29e'),
+          fontSize: '13px', fontFamily: 'Georgia, serif',
+          transition: 'all 0.2s', userSelect: 'none', outline: 'none',
+        }}
+        onFocus={e => e.target.style.boxShadow = `0 0 0 2px ${lightMode ? '#1c1917' : '#e7e5e4'}`}
+        onBlur={e => e.target.style.boxShadow = 'none'}
+      >
         <span>Notes</span>
-        <div style={pillTrack}>
-          <div style={pillThumb} />
+        <div aria-hidden="true" style={{
+          width: '32px', height: '18px', borderRadius: '9px',
+          background: noteMode ? '#d97706' : (lightMode ? '#c4c0bb' : '#44403c'),
+          position: 'relative', transition: 'background 0.2s', flexShrink: 0,
+        }}>
+          <div style={{
+            position: 'absolute', top: '2px',
+            left: noteMode ? '16px' : '2px',
+            width: '14px', height: '14px', borderRadius: '50%',
+            background: '#fff', transition: 'left 0.2s',
+          }} />
         </div>
       </button>
     </div>
