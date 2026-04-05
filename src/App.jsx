@@ -66,13 +66,18 @@ export default function App() {
   const [noteGrid, setNoteGrid] = useState(() => loadState()?.noteGrid ?? buildEmptyNoteGrid(INITIAL_PLAYERS))
   const [noteMode, setNoteMode] = useState(() => loadState()?.noteMode ?? false)
   const [notes, setNotes] = useState(() => loadState()?.notes ?? '')
+  const [itemNotes, setItemNotes] = useState(() => loadState()?.itemNotes ?? {})
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef(null)
 
   // Persist all state to localStorage whenever anything changes
   useEffect(() => {
-    saveState({ players, grid, noteGrid, noteMode, notes })
-  }, [players, grid, noteGrid, noteMode, notes])
+    saveState({ players, grid, noteGrid, noteMode, notes, itemNotes })
+  }, [players, grid, noteGrid, noteMode, notes, itemNotes])
+
+  const setItemNote = useCallback((item, value) => {
+    setItemNotes(prev => ({ ...prev, [item]: value }))
+  }, [])
 
   useEffect(() => {
     function handleClick(e) {
@@ -150,6 +155,7 @@ export default function App() {
     setGrid(buildEmptyGrid(players))
     setNoteGrid(buildEmptyNoteGrid(players))
     setNotes('')
+    setItemNotes({})
     localStorage.removeItem(STORAGE_KEY)
   }, [players])
 
@@ -190,6 +196,8 @@ export default function App() {
           noteMode={noteMode}
           onCycleCell={cycleCell}
           onCycleNoteCell={cycleNoteCell}
+          itemNotes={itemNotes}
+          onSetItemNote={setItemNote}
         />
         <NotesArea notes={notes} onChange={setNotes} />
       </div>

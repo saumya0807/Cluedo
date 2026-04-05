@@ -7,7 +7,7 @@ const SECTIONS = [
   { label: 'Where?', color: '#a78bfa', items: WHERE },
 ]
 
-export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, onCycleNoteCell }) {
+export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, onCycleNoteCell, itemNotes, onSetItemNote }) {
   const CELL_W = 54
   const CELL_GAP = 8
   const LABEL_W = 130
@@ -22,6 +22,8 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
     display: 'inline-block',
     minWidth: '100%',
   }
+
+  const NOTE_COL_W = 130
 
   // Header row with player names (rotated)
   const headerRowStyle = {
@@ -64,6 +66,12 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
               <span style={nameTextStyle(idx)}>{p.name}</span>
             </div>
           ))}
+          {/* Spacer above the item-notes column */}
+          <div style={{ width: `${NOTE_COL_W}px`, height: '80px', flexShrink: 0, display: 'flex', alignItems: 'flex-end', paddingBottom: '4px' }}>
+            <span style={{ fontSize: '10px', fontFamily: 'Georgia, serif', color: '#57534e', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              Row notes
+            </span>
+          </div>
         </div>
 
         {/* Sections */}
@@ -148,6 +156,36 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
                     />
                   )
                 ))}
+
+                {/* Per-item row note */}
+                <textarea
+                  value={itemNotes?.[item] ?? ''}
+                  onChange={e => onSetItemNote(item, e.target.value)}
+                  placeholder="…"
+                  rows={1}
+                  style={{
+                    width: `${NOTE_COL_W}px`,
+                    height: `${CELL_W}px`,
+                    flexShrink: 0,
+                    background: '#111',
+                    border: '1px solid',
+                    borderColor: itemNotes?.[item] ? '#57534e' : '#2a2826',
+                    borderRadius: '8px',
+                    color: '#d4cfc9',
+                    fontFamily: 'monospace',
+                    fontSize: '11px',
+                    lineHeight: '1.45',
+                    padding: '6px 8px',
+                    resize: 'none',
+                    outline: 'none',
+                    overflowY: 'auto',
+                    boxSizing: 'border-box',
+                    transition: 'border-color 0.15s',
+                    verticalAlign: 'top',
+                  }}
+                  onFocus={e => e.target.style.borderColor = '#78716c'}
+                  onBlur={e => e.target.style.borderColor = itemNotes?.[item] ? '#57534e' : '#2a2826'}
+                />
               </div>
             )})}
           </div>
