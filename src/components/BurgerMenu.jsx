@@ -20,7 +20,9 @@ const LEGEND_ITEMS_LIGHT = [
   { key: 'empty', preview: '·',   bg: '#e8e5e3', color: '#78716c', label: 'Unknown / clear' },
 ]
 
-export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReorderPlayers, onReset, lightMode, onLightModeToggle }) {
+const TOGGLEABLE_KEYS = new Set(['q', 'd1', 'd2', 'd3'])
+
+export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReorderPlayers, onReset, lightMode, onLightModeToggle, enabledStates = { q: true, d1: true, d2: true, d3: true }, onToggleState }) {
   const [newName, setNewName] = useState('')
   const [confirmReset, setConfirmReset] = useState(false)
   const [legendOpen, setLegendOpen] = useState(false)
@@ -228,21 +230,51 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
         </button>
         {legendOpen && (
           <div id="legend-content" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {LEGEND_ITEMS.map(item => (
-              <div key={item.key} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{
-                  width: '32px', height: '24px',
-                  background: item.bg,
-                  border: `1px solid ${lightMode ? '#d1d0ce' : '#44403c'}`,
-                  borderRadius: '4px',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: item.color, fontSize: '11px', fontWeight: 'bold', flexShrink: 0,
-                }}>
-                  {item.preview}
+            {LEGEND_ITEMS.map(item => {
+              const isToggleable = TOGGLEABLE_KEYS.has(item.key)
+              const isOn = !isToggleable || (enabledStates?.[item.key] !== false)
+              return (
+                <div key={item.key} style={{ display: 'flex', alignItems: 'center', gap: '10px', opacity: isToggleable && !isOn ? 0.45 : 1, transition: 'opacity 0.2s' }}>
+                  <div style={{
+                    width: '32px', height: '24px',
+                    background: item.bg,
+                    border: `1px solid ${lightMode ? '#d1d0ce' : '#44403c'}`,
+                    borderRadius: '4px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: item.color, fontSize: '11px', fontWeight: 'bold', flexShrink: 0,
+                  }}>
+                    {item.preview}
+                  </div>
+                  <span style={{ flex: 1, fontSize: '13px', color: textDim, fontFamily: 'Georgia, serif' }}>{item.label}</span>
+                  {isToggleable && (
+                    <button
+                      role="switch"
+                      aria-checked={isOn}
+                      aria-label={`${isOn ? 'Disable' : 'Enable'} ${item.label} state`}
+                      onClick={() => onToggleState?.(item.key)}
+                      style={{
+                        flexShrink: 0,
+                        width: '28px', height: '16px', borderRadius: '8px',
+                        background: isOn ? '#4ade80' : (lightMode ? '#c4c0bb' : '#44403c'),
+                        border: 'none', position: 'relative',
+                        cursor: 'pointer', padding: 0, outline: 'none',
+                        transition: 'background 0.2s',
+                      }}
+                      onFocus={e => e.target.style.boxShadow = `0 0 0 2px ${lightMode ? '#1c1917' : '#e7e5e4'}`}
+                      onBlur={e => e.target.style.boxShadow = 'none'}
+                    >
+                      <div style={{
+                        position: 'absolute', top: '2px',
+                        left: isOn ? '14px' : '2px',
+                        width: '12px', height: '12px', borderRadius: '50%',
+                        background: '#fff', transition: 'left 0.2s',
+                        pointerEvents: 'none',
+                      }} />
+                    </button>
+                  )}
                 </div>
-                <span style={{ fontSize: '13px', color: textDim, fontFamily: 'Georgia, serif' }}>{item.label}</span>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>

@@ -68,13 +68,16 @@ export default function App() {
   const [notes, setNotes] = useState(() => loadState()?.notes ?? '')
   const [itemNotes, setItemNotes] = useState(() => loadState()?.itemNotes ?? {})
   const [lightMode, setLightMode] = useState(() => loadState()?.lightMode ?? false)
+  const [enabledStates, setEnabledStates] = useState(() => loadState()?.enabledStates ?? { q: true, d1: true, d2: true, d3: true })
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef(null)
+  const enabledStatesRef = useRef(enabledStates)
+  useEffect(() => { enabledStatesRef.current = enabledStates }, [enabledStates])
 
   // Persist all state to localStorage whenever anything changes
   useEffect(() => {
-    saveState({ players, grid, noteGrid, noteMode, notes, itemNotes, lightMode })
-  }, [players, grid, noteGrid, noteMode, notes, itemNotes, lightMode])
+    saveState({ players, grid, noteGrid, noteMode, notes, itemNotes, lightMode, enabledStates })
+  }, [players, grid, noteGrid, noteMode, notes, itemNotes, lightMode, enabledStates])
 
   const setItemNote = useCallback((item, value) => {
     setItemNotes(prev => ({ ...prev, [item]: value }))
@@ -116,12 +119,18 @@ export default function App() {
     })
   }, [])
 
+  const toggleState = useCallback((key) => {
+    setEnabledStates(prev => ({ ...prev, [key]: !prev[key] }))
+  }, [])
+
   const cycleCell = useCallback((playerId, item) => {
-    const STATES = [null, 'tick', 'cross', 'q', 'd1', 'd2', 'd3']
+    const ALL_STATES = [null, 'tick', 'cross', 'q', 'd1', 'd2', 'd3']
+    const es = enabledStatesRef.current
+    const STATES = ALL_STATES.filter(s => s === null || s === 'tick' || s === 'cross' || es[s] !== false)
     setGrid(prev => {
       const current = prev[playerId]?.[item] ?? null
       const idx = STATES.indexOf(current)
-      const next = STATES[(idx + 1) % STATES.length]
+      const next = STATES[idx === -1 ? 0 : (idx + 1) % STATES.length]
       return {
         ...prev,
         [playerId]: { ...prev[playerId], [item]: next }
@@ -191,6 +200,8 @@ export default function App() {
             onClose={() => setMenuOpen(false)}
             lightMode={lightMode}
             onLightModeToggle={() => setLightMode(m => !m)}
+            enabledStates={enabledStates}
+            onToggleState={toggleState}
           />
         )}
       </div>
