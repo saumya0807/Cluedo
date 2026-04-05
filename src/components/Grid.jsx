@@ -97,7 +97,9 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
             </div>
 
             {/* Item rows */}
-            {section.items.map(item => (
+            {section.items.map(item => {
+              const isTicked = players.some(p => (grid[p.id]?.[item] ?? null) === 'tick')
+              return (
               <div
                 key={item}
                 style={{
@@ -113,13 +115,17 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
                   flexShrink: 0,
                   fontSize: '12px',
                   fontFamily: 'monospace',
-                  color: '#a8a29e',
+                  color: isTicked ? '#4ade80' : '#a8a29e',
                   textAlign: 'right',
                   paddingRight: '10px',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
                   lineHeight: '54px',
+                  textDecoration: isTicked ? 'line-through' : 'none',
+                  textDecorationColor: isTicked ? '#4ade80' : 'transparent',
+                  transition: 'color 0.2s, text-decoration 0.2s',
+                  opacity: isTicked ? 0.6 : 1,
                 }}>
                   {item}
                 </div>
@@ -143,7 +149,7 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
                   )
                 ))}
               </div>
-            ))}
+            )})}
           </div>
         ))}
       </div>
