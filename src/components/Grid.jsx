@@ -38,6 +38,7 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
             width: `${LABEL_W}px`, flexShrink: 0,
             position: 'sticky', left: 0, zIndex: 3,
             background: stickyBg,
+            alignSelf: 'stretch',
           }} />
           {players.map((p, idx) => (
             <div
