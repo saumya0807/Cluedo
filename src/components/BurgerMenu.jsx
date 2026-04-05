@@ -173,7 +173,7 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
             )
           })}
         </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '8px', width: '100%', boxSizing: 'border-box' }}>
           <input
             style={{
               background: inputBg,
@@ -184,6 +184,7 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
               fontSize: '14px',
               padding: '6px 10px',
               flex: 1,
+              minWidth: 0,
               outline: 'none',
               transition: 'box-shadow 0.15s',
             }}

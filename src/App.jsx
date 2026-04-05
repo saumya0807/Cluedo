@@ -68,7 +68,10 @@ export default function App() {
   const [notes, setNotes] = useState(() => loadState()?.notes ?? '')
   const [itemNotes, setItemNotes] = useState(() => loadState()?.itemNotes ?? {})
   const [lightMode, setLightMode] = useState(() => loadState()?.lightMode ?? false)
-  const [enabledStates, setEnabledStates] = useState(() => loadState()?.enabledStates ?? { q: true, d1: true, d2: true, d3: true })
+  const [enabledStates, setEnabledStates] = useState(() => {
+    const saved = loadState()?.enabledStates ?? {}
+    return { q: saved.q !== false, d1: saved.d1 !== false, d2: saved.d2 !== false, d3: saved.d3 !== false }
+  })
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef(null)
   const enabledStatesRef = useRef(enabledStates)
