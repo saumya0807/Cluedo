@@ -25,35 +25,31 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
 
   const NOTE_COL_W = 130
 
-  // Header row with player names (rotated)
+  // Header row with player names (horizontal)
   const headerRowStyle = {
     display: 'flex',
-    alignItems: 'flex-end',
+    alignItems: 'center',
     marginBottom: '6px',
     paddingLeft: `${LABEL_W}px`,
     gap: `${CELL_GAP}px`,
   }
 
-  const rotatedNameStyle = (idx) => ({
+  const rotatedNameStyle = () => ({
     width: `${CELL_W}px`,
-    height: '80px',
     display: 'flex',
-    alignItems: 'flex-end',
+    alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
   })
 
   const nameTextStyle = (idx) => ({
-    writingMode: 'vertical-rl',
-    transform: 'rotate(180deg)',
-    fontSize: '12px',
+    fontSize: '11px',
     fontFamily: 'Georgia, serif',
     color: PLAYER_COLORS[idx % PLAYER_COLORS.length],
-    textOverflow: 'ellipsis',
     overflow: 'hidden',
-    maxHeight: '78px',
     whiteSpace: 'nowrap',
     letterSpacing: '0.03em',
+    textAlign: 'center',
   })
 
   return (
@@ -63,15 +59,11 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
         <div style={headerRowStyle}>
           {players.map((p, idx) => (
             <div key={p.id} style={rotatedNameStyle(idx)}>
-              <span style={nameTextStyle(idx)}>{p.name}</span>
+              <span style={nameTextStyle(idx)}>{p.name.slice(0, 5)}</span>
             </div>
           ))}
-          {/* Spacer above the item-notes column */}
-          <div style={{ width: `${NOTE_COL_W}px`, height: '80px', flexShrink: 0, display: 'flex', alignItems: 'flex-end', paddingBottom: '4px' }}>
-            <span style={{ fontSize: '10px', fontFamily: 'Georgia, serif', color: '#57534e', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-              Row notes
-            </span>
-          </div>
+          {/* Empty spacer above the row-notes column */}
+          <div style={{ width: `${NOTE_COL_W}px`, flexShrink: 0 }} />
         </div>
 
         {/* Sections */}
@@ -85,18 +77,12 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
               paddingLeft: '4px',
             }}>
               <div style={{
-                width: `${LABEL_W - 8}px`,
-                height: '2px',
-                background: 'transparent',
-                flexShrink: 0,
-              }} />
-              <div style={{
                 fontSize: '13px',
                 fontFamily: 'Georgia, serif',
                 fontWeight: 'bold',
                 color: section.color,
                 letterSpacing: '0.06em',
-                paddingLeft: '4px',
+                paddingLeft: '6px',
                 borderLeft: `3px solid ${section.color}`,
                 lineHeight: '1.4',
               }}>
@@ -124,8 +110,8 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
                   fontSize: '12px',
                   fontFamily: 'monospace',
                   color: isTicked ? '#4ade80' : '#a8a29e',
-                  textAlign: 'right',
-                  paddingRight: '10px',
+                  textAlign: 'left',
+                  paddingLeft: '8px',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
