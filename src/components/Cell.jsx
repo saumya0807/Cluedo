@@ -29,14 +29,14 @@ function getNoteSubConfig(val, lightMode) {
   if (lightMode) {
     const lm = {
       0: { bg: '#e0dede', color: '#a8a29e', content: '·' },
-      1: { bg: '#fef3c7', color: '#92400e', content: '?' },
+      1: { bg: '#fef3c7', color: '#d97706', content: '●' },
       2: { bg: '#dcfce7', color: '#15803d', content: '●' },
     }
     return lm[val] ?? lm[0]
   }
   const dm = {
     0: { bg: '#151515', color: '#44403c', content: '·' },
-    1: { bg: '#1c1200', color: '#fbbf24', content: '?' },
+    1: { bg: '#1c1200', color: '#fbbf24', content: '●' },
     2: { bg: '#052e16', color: '#4ade80', content: '●' },
   }
   return dm[val] ?? dm[0]
@@ -81,9 +81,9 @@ function StateGhost({ state, lightMode }) {
   if (!cfg?.content) return null
   return (
     <div aria-hidden="true" style={{
-      position: 'absolute', inset: 0,
+      position: 'absolute', inset: 0, zIndex: 2,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      pointerEvents: 'none', opacity: 0.2, color: cfg.color,
+      pointerEvents: 'none', opacity: 0.28, color: cfg.color,
       fontSize: state === 'd2' || state === 'd3' ? '11px' : '22px',
       fontWeight: 'bold',
       letterSpacing: state === 'd2' || state === 'd3' ? '1px' : 'normal',
