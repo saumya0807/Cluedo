@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { PLAYER_COLORS } from '../constants'
 
 const LEGEND_ITEMS = [
@@ -11,9 +11,56 @@ const LEGEND_ITEMS = [
   { key: 'empty', preview: '·', bg: '#1c1917', color: '#44403c', label: 'Unknown / clear' },
 ]
 
-export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReset }) {
+export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReorderPlayers, onReset }) {
   const [newName, setNewName] = useState('')
   const [confirmReset, setConfirmReset] = useState(false)
+
+  // Drag-to-reorder state
+  const [draggingId, setDraggingId] = useState(null)
+  const [dragOverIdx, setDragOverIdx] = useState(null)
+  const holdTimer = useRef(null)
+  const isDragging = useRef(false)
+  const listRef = useRef(null)
+
+  const getPointerY = (e) => e.touches?.[0]?.clientY ?? e.clientY
+
+  const getTargetIdx = (y) => {
+    if (!listRef.current) return null
+    const rows = listRef.current.querySelectorAll('[data-row-id]')
+    let idx = rows.length - 1
+    for (let i = 0; i < rows.length; i++) {
+      const rect = rows[i].getBoundingClientRect()
+      if (y < rect.top + rect.height * 0.5) { idx = i; break }
+    }
+    return Math.max(1, idx) // never before "Me"
+  }
+
+  const onHandleDown = (e, playerId) => {
+    e.preventDefault()
+    isDragging.current = false
+    holdTimer.current = setTimeout(() => {
+      isDragging.current = true
+      setDraggingId(playerId)
+      setDragOverIdx(players.findIndex(p => p.id === playerId))
+      navigator.vibrate?.(40)
+    }, 320)
+  }
+
+  const onHandleMove = (e) => {
+    if (!isDragging.current) return
+    e.preventDefault()
+    setDragOverIdx(getTargetIdx(getPointerY(e)))
+  }
+
+  const onHandleUp = (e) => {
+    clearTimeout(holdTimer.current)
+    if (isDragging.current && draggingId !== null && dragOverIdx !== null) {
+      onReorderPlayers(draggingId, dragOverIdx)
+    }
+    isDragging.current = false
+    setDraggingId(null)
+    setDragOverIdx(null)
+  }
 
   const menuStyle = {
     position: 'absolute',
@@ -158,32 +205,87 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onRes
       {/* Players */}
       <div style={sectionStyle}>
         <div style={sectionTitleStyle}>Players</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '10px' }}>
-          {players.map((p, idx) => (
-            <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{
-                width: '10px', height: '10px', borderRadius: '50%',
-                background: PLAYER_COLORS[idx % PLAYER_COLORS.length],
-                flexShrink: 0,
-              }} />
-              <span style={{ flex: 1, fontSize: '14px', fontFamily: 'Georgia, serif', color: '#e7e5e4' }}>
-                {p.name}
-              </span>
-              {!p.isMe && (
-                <button
-                  onClick={() => onRemovePlayer(p.id)}
-                  style={{
-                    background: 'none', border: 'none', color: '#78716c',
-                    cursor: 'pointer', fontSize: '14px', padding: '2px 4px',
-                    lineHeight: 1,
-                  }}
-                  aria-label={`Remove ${p.name}`}
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-          ))}
+        <div
+          ref={listRef}
+          style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginBottom: '10px' }}
+          onMouseMove={onHandleMove}
+          onTouchMove={onHandleMove}
+          onMouseUp={onHandleUp}
+          onTouchEnd={onHandleUp}
+        >
+          {players.map((p, idx) => {
+            const isDraggingThis = draggingId === p.id
+            const isDropTarget = draggingId && !isDraggingThis && dragOverIdx === idx
+            return (
+              <div key={p.id} data-row-id={p.id}>
+                {/* drop-zone insertion line above this row */}
+                {isDropTarget && (
+                  <div style={{
+                    height: '2px',
+                    background: '#fbbf24',
+                    borderRadius: '2px',
+                    margin: '2px 0',
+                    transition: 'opacity 0.1s',
+                  }} />
+                )}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '5px 4px',
+                  borderRadius: '6px',
+                  background: isDraggingThis ? '#292524' : 'transparent',
+                  opacity: isDraggingThis ? 0.5 : 1,
+                  transition: 'background 0.15s, opacity 0.15s',
+                  userSelect: 'none',
+                }}>
+                  {/* drag handle — only for non-Me players */}
+                  {!p.isMe ? (
+                    <span
+                      onMouseDown={(e) => onHandleDown(e, p.id)}
+                      onTouchStart={(e) => onHandleDown(e, p.id)}
+                      style={{
+                        fontSize: '15px',
+                        color: draggingId === p.id ? '#fbbf24' : '#57534e',
+                        cursor: 'grab',
+                        touchAction: 'none',
+                        paddingRight: '2px',
+                        flexShrink: 0,
+                        lineHeight: 1,
+                        transition: 'color 0.15s',
+                      }}
+                      title="Hold to drag"
+                    >
+                      ⠿
+                    </span>
+                  ) : (
+                    <span style={{ width: '17px', flexShrink: 0 }} />
+                  )}
+                  <div style={{
+                    width: '10px', height: '10px', borderRadius: '50%',
+                    background: PLAYER_COLORS[idx % PLAYER_COLORS.length],
+                    flexShrink: 0,
+                  }} />
+                  <span style={{ flex: 1, fontSize: '14px', fontFamily: 'Georgia, serif', color: '#e7e5e4' }}>
+                    {p.name}
+                  </span>
+                  {!p.isMe && (
+                    <button
+                      onClick={() => onRemovePlayer(p.id)}
+                      style={{
+                        background: 'none', border: 'none', color: '#78716c',
+                        cursor: 'pointer', fontSize: '14px', padding: '2px 4px',
+                        lineHeight: 1,
+                      }}
+                      aria-label={`Remove ${p.name}`}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              </div>
+            )
+          })}
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
           <input

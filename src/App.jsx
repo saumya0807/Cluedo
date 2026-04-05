@@ -134,6 +134,18 @@ export default function App() {
     })
   }, [])
 
+  const reorderPlayers = useCallback((playerId, toIdx) => {
+    setPlayers(prev => {
+      const player = prev.find(p => p.id === playerId)
+      if (!player) return prev
+      const without = prev.filter(p => p.id !== playerId)
+      const clamped = Math.max(1, Math.min(toIdx, prev.length - 1))
+      const result = [...without]
+      result.splice(clamped, 0, player)
+      return result
+    })
+  }, [])
+
   const resetBoard = useCallback(() => {
     setGrid(buildEmptyGrid(players))
     setNoteGrid(buildEmptyNoteGrid(players))
@@ -164,6 +176,7 @@ export default function App() {
             players={players}
             onAddPlayer={addPlayer}
             onRemovePlayer={removePlayer}
+            onReorderPlayers={reorderPlayers}
             onReset={resetBoard}
             onClose={() => setMenuOpen(false)}
           />
