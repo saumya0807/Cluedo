@@ -85,18 +85,12 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
               paddingLeft: '4px',
             }}>
               <div style={{
-                width: `${LABEL_W - 8}px`,
-                height: '2px',
-                background: 'transparent',
-                flexShrink: 0,
-              }} />
-              <div style={{
                 fontSize: '13px',
                 fontFamily: 'Georgia, serif',
                 fontWeight: 'bold',
                 color: section.color,
                 letterSpacing: '0.06em',
-                paddingLeft: '4px',
+                paddingLeft: '6px',
                 borderLeft: `3px solid ${section.color}`,
                 lineHeight: '1.4',
               }}>
@@ -124,8 +118,8 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
                   fontSize: '12px',
                   fontFamily: 'monospace',
                   color: isTicked ? '#4ade80' : '#a8a29e',
-                  textAlign: 'right',
-                  paddingRight: '10px',
+                  textAlign: 'left',
+                  paddingLeft: '8px',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
