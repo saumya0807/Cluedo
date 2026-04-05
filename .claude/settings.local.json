@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(printf '\\\\n')",
+      "Bash(cp temp-react/package.json .)",
+      "Bash(cp temp-react/index.html .)",
+      "Bash(cp temp-react/vite.config.js .)",
+      "Bash(cp temp-react/eslint.config.js .)",
+      "Bash(cp -r temp-react/public .)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)"
+    ]
+  }
+}
