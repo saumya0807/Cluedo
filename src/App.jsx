@@ -6,6 +6,21 @@ import NotesArea from './components/NotesArea'
 import { ALL_ITEMS } from './constants'
 
 const INITIAL_PLAYERS = [{ id: 'me', name: 'Me', isMe: true }]
+const STORAGE_KEY = 'cluedo_state'
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (raw) return JSON.parse(raw)
+  } catch {}
+  return null
+}
+
+function saveState(state) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+  } catch {}
+}
 
 function buildEmptyGrid(players) {
   const g = {}
@@ -46,13 +61,18 @@ function mergePlayerIntoNoteGrid(noteGrid, newPlayer) {
 }
 
 export default function App() {
-  const [players, setPlayers] = useState(INITIAL_PLAYERS)
-  const [grid, setGrid] = useState(() => buildEmptyGrid(INITIAL_PLAYERS))
-  const [noteGrid, setNoteGrid] = useState(() => buildEmptyNoteGrid(INITIAL_PLAYERS))
-  const [noteMode, setNoteMode] = useState(false)
-  const [notes, setNotes] = useState('')
+  const [players, setPlayers] = useState(() => loadState()?.players ?? INITIAL_PLAYERS)
+  const [grid, setGrid] = useState(() => loadState()?.grid ?? buildEmptyGrid(INITIAL_PLAYERS))
+  const [noteGrid, setNoteGrid] = useState(() => loadState()?.noteGrid ?? buildEmptyNoteGrid(INITIAL_PLAYERS))
+  const [noteMode, setNoteMode] = useState(() => loadState()?.noteMode ?? false)
+  const [notes, setNotes] = useState(() => loadState()?.notes ?? '')
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef(null)
+
+  // Persist all state to localStorage whenever anything changes
+  useEffect(() => {
+    saveState({ players, grid, noteGrid, noteMode, notes })
+  }, [players, grid, noteGrid, noteMode, notes])
 
   useEffect(() => {
     function handleClick(e) {
@@ -118,6 +138,7 @@ export default function App() {
     setGrid(buildEmptyGrid(players))
     setNoteGrid(buildEmptyNoteGrid(players))
     setNotes('')
+    localStorage.removeItem(STORAGE_KEY)
   }, [players])
 
   const appStyle = {
