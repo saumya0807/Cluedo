@@ -17,10 +17,12 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
   const NOTE_COL_W = 130
 
   const colors = lightMode ? PLAYER_COLORS_LIGHT : PLAYER_COLORS
+  // Background for sticky label column — must be opaque to cover scrolling cells
+  const stickyBg = lightMode ? '#f0ede9' : '#111111'
 
   return (
-    <div style={{ padding: '16px 12px 8px 12px', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-      <div style={{ display: 'inline-block', minWidth: '100%' }}>
+    <div style={{ padding: '16px 0 8px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+      <div style={{ display: 'inline-block', minWidth: '100%', paddingRight: '12px' }}>
 
         {/* Player name header */}
         <div
@@ -28,10 +30,15 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
           style={{
             display: 'flex', alignItems: 'center',
             marginBottom: '6px',
-            paddingLeft: `${LABEL_W}px`,
             gap: `${CELL_GAP}px`,
           }}
         >
+          {/* Sticky spacer aligned with label column */}
+          <div style={{
+            width: `${LABEL_W}px`, flexShrink: 0,
+            position: 'sticky', left: 0, zIndex: 3,
+            background: stickyBg,
+          }} />
           {players.map((p, idx) => (
             <div
               key={p.id}
@@ -60,9 +67,15 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
           const headerColor = lightMode ? section.lightColor : section.color
           return (
             <div key={section.label} style={{ marginBottom: '8px' }}>
+              {/* Section header — sticky so label stays visible while cells scroll */}
               <div
                 role="rowgroup"
-                style={{ display: 'flex', alignItems: 'center', marginBottom: '4px', paddingLeft: '4px' }}
+                style={{
+                  position: 'sticky', left: 0, zIndex: 3,
+                  display: 'inline-flex', alignItems: 'center',
+                  marginBottom: '4px', paddingLeft: '4px',
+                  background: stickyBg,
+                }}
               >
                 <h2 style={{
                   margin: 0,
@@ -92,14 +105,16 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
                       gap: `${CELL_GAP}px`,
                     }}
                   >
-                    {/* Label */}
+                    {/* Label — sticky so it stays visible while cells scroll right */}
                     <div
                       role="rowheader"
                       style={{
                         width: `${LABEL_W}px`, flexShrink: 0,
+                        position: 'sticky', left: 0, zIndex: 2,
+                        background: stickyBg,
                         fontSize: '12px', fontFamily: 'monospace',
                         color: isTicked ? tickColor : (lightMode ? '#57534e' : '#a8a29e'),
-                        textAlign: 'left', paddingLeft: '8px',
+                        textAlign: 'left', paddingLeft: '12px',
                         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                         lineHeight: '54px',
                         textDecoration: isTicked ? 'line-through' : 'none',
