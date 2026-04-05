@@ -94,7 +94,7 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
   return (
     <div
       style={{
-        position: 'absolute', top: '56px', left: 0, width: '280px',
+        position: 'absolute', top: '56px', right: 0, width: '280px',
         background: bg, border, borderTop: 'none',
         borderRadius: '0 0 12px 12px', zIndex: 99,
         boxShadow: '4px 8px 32px rgba(0,0,0,0.45)',
