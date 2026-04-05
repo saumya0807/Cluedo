@@ -11,9 +11,10 @@ const LEGEND_ITEMS = [
   { key: 'empty', preview: '·', bg: '#1c1917', color: '#44403c', label: 'Unknown / clear' },
 ]
 
-export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReorderPlayers, onReset }) {
+export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReorderPlayers, onReset, lightMode, onLightModeToggle }) {
   const [newName, setNewName] = useState('')
   const [confirmReset, setConfirmReset] = useState(false)
+  const [legendOpen, setLegendOpen] = useState(false)
 
   // Drag-to-reorder state
   const [draggingId, setDraggingId] = useState(null)
@@ -67,8 +68,8 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
     top: '56px',
     left: 0,
     width: '280px',
-    background: '#1c1917',
-    border: '1px solid #44403c',
+    background: lightMode ? '#ffffff' : '#1c1917',
+    border: lightMode ? '1px solid #d6d3d1' : '1px solid #44403c',
     borderTop: 'none',
     borderRadius: '0 0 12px 12px',
     zIndex: 99,
@@ -83,7 +84,7 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
 
   const dividerStyle = {
     height: '1px',
-    background: '#44403c',
+    background: lightMode ? '#e7e5e4' : '#44403c',
     margin: '0 16px',
   }
 
@@ -108,10 +109,10 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
   }
 
   const inputStyle = {
-    background: '#0d0d0d',
-    border: '1px solid #44403c',
+    background: lightMode ? '#f5f3f0' : '#0d0d0d',
+    border: lightMode ? '1px solid #c4c0bb' : '1px solid #44403c',
     borderRadius: '6px',
-    color: '#e7e5e4',
+    color: lightMode ? '#1c1917' : '#e7e5e4',
     fontFamily: 'Georgia, serif',
     fontSize: '14px',
     padding: '6px 10px',
@@ -168,40 +169,30 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
     flex: 1,
   }
 
+  const lightPillTrack = {
+    width: '32px',
+    height: '18px',
+    borderRadius: '9px',
+    background: lightMode ? '#d97706' : '#44403c',
+    position: 'relative',
+    transition: 'background 0.2s',
+    flexShrink: 0,
+    cursor: 'pointer',
+  }
+
+  const lightPillThumb = {
+    position: 'absolute',
+    top: '2px',
+    left: lightMode ? '16px' : '2px',
+    width: '14px',
+    height: '14px',
+    borderRadius: '50%',
+    background: '#fff',
+    transition: 'left 0.2s',
+  }
+
   return (
     <div style={menuStyle}>
-      {/* Legend */}
-      <div style={sectionStyle}>
-        <div style={sectionTitleStyle}>Legend</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          {LEGEND_ITEMS.map(item => (
-            <div key={item.key} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{
-                width: '32px',
-                height: '24px',
-                background: item.bg,
-                border: '1px solid #44403c',
-                borderRadius: '4px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: item.color,
-                fontSize: '11px',
-                fontWeight: 'bold',
-                flexShrink: 0,
-              }}>
-                {item.preview}
-              </div>
-              <span style={{ fontSize: '13px', color: '#a8a29e', fontFamily: 'Georgia, serif' }}>
-                {item.label}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div style={dividerStyle} />
-
       {/* Players */}
       <div style={sectionStyle}>
         <div style={sectionTitleStyle}>Players</div>
@@ -266,7 +257,7 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
                     background: PLAYER_COLORS[idx % PLAYER_COLORS.length],
                     flexShrink: 0,
                   }} />
-                  <span style={{ flex: 1, fontSize: '14px', fontFamily: 'Georgia, serif', color: '#e7e5e4' }}>
+                  <span style={{ flex: 1, fontSize: '14px', fontFamily: 'Georgia, serif', color: lightMode ? '#1c1917' : '#e7e5e4' }}>
                     {p.name}
                   </span>
                   {!p.isMe && (
@@ -298,6 +289,74 @@ export default function BurgerMenu({ players, onAddPlayer, onRemovePlayer, onReo
             maxLength={20}
           />
           <button style={addBtnStyle} onClick={handleAdd}>+ Add</button>
+        </div>
+      </div>
+
+      <div style={dividerStyle} />
+
+      {/* Legend — collapsible */}
+      <div style={sectionStyle}>
+        <div
+          onClick={() => setLegendOpen(o => !o)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            cursor: 'pointer',
+            marginBottom: legendOpen ? '10px' : 0,
+            userSelect: 'none',
+          }}
+        >
+          <div style={sectionTitleStyle}>Legend</div>
+          <span style={{ fontSize: '11px', color: '#78716c', marginBottom: legendOpen ? '10px' : 0 }}>
+            {legendOpen ? '▲' : '▼'}
+          </span>
+        </div>
+        {legendOpen && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            {LEGEND_ITEMS.map(item => (
+              <div key={item.key} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{
+                  width: '32px',
+                  height: '24px',
+                  background: item.bg,
+                  border: '1px solid #44403c',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: item.color,
+                  fontSize: '11px',
+                  fontWeight: 'bold',
+                  flexShrink: 0,
+                }}>
+                  {item.preview}
+                </div>
+                <span style={{ fontSize: '13px', color: '#a8a29e', fontFamily: 'Georgia, serif' }}>
+                  {item.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div style={dividerStyle} />
+
+      {/* Appearance / Light mode toggle */}
+      <div style={sectionStyle}>
+        <div style={sectionTitleStyle}>Appearance</div>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '10px',
+        }}>
+          <span style={{ fontSize: '16px', color: lightMode ? '#d97706' : '#78716c', lineHeight: 1 }}>☀</span>
+          <div style={lightPillTrack} onClick={onLightModeToggle} aria-label="Toggle light mode">
+            <div style={lightPillThumb} />
+          </div>
+          <span style={{ fontSize: '16px', color: lightMode ? '#78716c' : '#a8a29e', lineHeight: 1 }}>☾</span>
         </div>
       </div>
 

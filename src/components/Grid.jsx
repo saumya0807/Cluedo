@@ -7,7 +7,7 @@ const SECTIONS = [
   { label: 'Where?', color: '#a78bfa', items: WHERE },
 ]
 
-export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, onCycleNoteCell, itemNotes, onSetItemNote }) {
+export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, onCycleNoteCell, itemNotes, onSetItemNote, lightMode }) {
   const CELL_W = 54
   const CELL_GAP = 8
   const LABEL_W = 130
@@ -109,7 +109,7 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
                   flexShrink: 0,
                   fontSize: '12px',
                   fontFamily: 'monospace',
-                  color: isTicked ? '#4ade80' : '#a8a29e',
+                  color: isTicked ? '#4ade80' : (lightMode ? '#57534e' : '#a8a29e'),
                   textAlign: 'left',
                   paddingLeft: '8px',
                   overflow: 'hidden',
@@ -132,6 +132,7 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
                       noteArr={noteGrid[p.id]?.[item]}
                       state={grid[p.id]?.[item] ?? null}
                       onClickSub={(subIdx) => onCycleNoteCell(p.id, item, subIdx)}
+                      lightMode={lightMode}
                     />
                   ) : (
                     <NormalCell
@@ -139,6 +140,7 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
                       state={grid[p.id]?.[item] ?? null}
                       noteArr={noteGrid[p.id]?.[item]}
                       onClick={() => onCycleCell(p.id, item)}
+                      lightMode={lightMode}
                     />
                   )
                 ))}
@@ -153,11 +155,13 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
                     width: `${NOTE_COL_W}px`,
                     height: `${CELL_W}px`,
                     flexShrink: 0,
-                    background: '#111',
+                    background: lightMode ? '#f5f3f0' : '#111',
                     border: '1px solid',
-                    borderColor: itemNotes?.[item] ? '#57534e' : '#2a2826',
+                    borderColor: itemNotes?.[item]
+                      ? (lightMode ? '#c4c0bb' : '#57534e')
+                      : (lightMode ? '#e7e5e4' : '#2a2826'),
                     borderRadius: '8px',
-                    color: '#d4cfc9',
+                    color: lightMode ? '#1c1917' : '#d4cfc9',
                     fontFamily: 'monospace',
                     fontSize: '11px',
                     lineHeight: '1.45',
@@ -169,8 +173,10 @@ export default function Grid({ players, grid, noteGrid, noteMode, onCycleCell, o
                     transition: 'border-color 0.15s',
                     verticalAlign: 'top',
                   }}
-                  onFocus={e => e.target.style.borderColor = '#78716c'}
-                  onBlur={e => e.target.style.borderColor = itemNotes?.[item] ? '#57534e' : '#2a2826'}
+                  onFocus={e => e.target.style.borderColor = lightMode ? '#a8a29e' : '#78716c'}
+                  onBlur={e => e.target.style.borderColor = itemNotes?.[item]
+                    ? (lightMode ? '#c4c0bb' : '#57534e')
+                    : (lightMode ? '#e7e5e4' : '#2a2826')}
                 />
               </div>
             )})}
