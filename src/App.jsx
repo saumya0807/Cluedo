@@ -70,7 +70,10 @@ export default function App() {
   const [lightMode, setLightMode] = useState(() => loadState()?.lightMode ?? false)
   const [enabledStates, setEnabledStates] = useState(() => {
     const saved = loadState()?.enabledStates ?? {}
-    return { q: saved.q !== false, d1: saved.d1 !== false, d2: saved.d2 !== false, d3: saved.d3 !== false }
+    const result = { q: saved.q !== false, d1: saved.d1 !== false, d2: saved.d2 !== false, d3: saved.d3 !== false }
+    // If all toggleable states are off it means data was never set or got corrupted — reset to all on
+    if (!result.q && !result.d1 && !result.d2 && !result.d3) return { q: true, d1: true, d2: true, d3: true }
+    return result
   })
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef(null)
