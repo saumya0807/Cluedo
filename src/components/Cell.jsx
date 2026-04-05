@@ -77,16 +77,18 @@ function StateGhost({ state }) {
   )
 }
 
-export function NormalCell({ state, noteArr, onClick }) {
+export function NormalCell({ state, noteArr, onClick, lightMode }) {
   const [hovered, setHovered] = useState(false)
   const cfg = STATE_CONFIG[state] ?? STATE_CONFIG[null]
+
+  const isNull = state === null || state === undefined
 
   const style = {
     position: 'relative',
     width: '54px',
     height: '54px',
-    background: cfg.bg,
-    border: `1px solid ${cfg.border}`,
+    background: isNull ? (lightMode ? '#e8e5e3' : '#1c1917') : cfg.bg,
+    border: `1px solid ${isNull ? (lightMode ? '#c4c0bb' : '#3a3733') : cfg.border}`,
     borderRadius: '8px',
     display: 'flex',
     alignItems: 'center',
@@ -119,15 +121,15 @@ export function NormalCell({ state, noteArr, onClick }) {
   )
 }
 
-export function NoteCell({ noteArr, state, onClickSub }) {
+export function NoteCell({ noteArr, state, onClickSub, lightMode }) {
   const [hoveredSub, setHoveredSub] = useState(null)
 
   const outerStyle = {
     position: 'relative',
     width: '54px',
     height: '54px',
-    background: '#151515',
-    border: '1px solid #2a2a3e',
+    background: lightMode ? '#ebebeb' : '#151515',
+    border: `1px solid ${lightMode ? '#c4c0bb' : '#2a2a3e'}`,
     borderRadius: '8px',
     display: 'grid',
     gridTemplateColumns: 'repeat(3, 1fr)',
@@ -144,6 +146,8 @@ export function NoteCell({ noteArr, state, onClickSub }) {
       {(noteArr ?? [0, 0, 0, 0, 0, 0, 0, 0, 0]).map((val, i) => {
         const cfg = NOTE_SUB_CONFIG[val] ?? NOTE_SUB_CONFIG[0]
         const isHov = hoveredSub === i
+        const emptyBg = val === 0 ? (lightMode ? '#e0dede' : '#151515') : cfg.bg
+        const hovEmptyBg = val === 0 ? (lightMode ? '#d4d2d2' : '#2a2a2a') : cfg.bg
         return (
           <div
             key={i}
@@ -153,7 +157,7 @@ export function NoteCell({ noteArr, state, onClickSub }) {
             style={{
               position: 'relative',
               zIndex: 1,
-              background: isHov ? (val === 0 ? '#2a2a2a' : cfg.bg) : cfg.bg,
+              background: isHov ? (val === 0 ? hovEmptyBg : cfg.bg) : emptyBg,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',

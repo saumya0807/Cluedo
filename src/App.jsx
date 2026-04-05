@@ -67,13 +67,14 @@ export default function App() {
   const [noteMode, setNoteMode] = useState(() => loadState()?.noteMode ?? false)
   const [notes, setNotes] = useState(() => loadState()?.notes ?? '')
   const [itemNotes, setItemNotes] = useState(() => loadState()?.itemNotes ?? {})
+  const [lightMode, setLightMode] = useState(() => loadState()?.lightMode ?? false)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef(null)
 
   // Persist all state to localStorage whenever anything changes
   useEffect(() => {
-    saveState({ players, grid, noteGrid, noteMode, notes, itemNotes })
-  }, [players, grid, noteGrid, noteMode, notes, itemNotes])
+    saveState({ players, grid, noteGrid, noteMode, notes, itemNotes, lightMode })
+  }, [players, grid, noteGrid, noteMode, notes, itemNotes, lightMode])
 
   const setItemNote = useCallback((item, value) => {
     setItemNotes(prev => ({ ...prev, [item]: value }))
@@ -161,8 +162,10 @@ export default function App() {
 
   const appStyle = {
     minHeight: '100vh',
-    background: 'radial-gradient(ellipse at top left, #1a0a05 0%, #0d0d0d 55%, #05050f 100%)',
-    color: '#e7e5e4',
+    background: lightMode
+      ? '#f0ede9'
+      : 'radial-gradient(ellipse at top left, #1a0a05 0%, #0d0d0d 55%, #05050f 100%)',
+    color: lightMode ? '#1c1917' : '#e7e5e4',
     fontFamily: 'Georgia, serif',
     display: 'flex',
     flexDirection: 'column',
@@ -176,6 +179,7 @@ export default function App() {
           onMenuToggle={() => setMenuOpen(o => !o)}
           noteMode={noteMode}
           onNoteModeToggle={() => setNoteMode(m => !m)}
+          lightMode={lightMode}
         />
         {menuOpen && (
           <BurgerMenu
@@ -185,6 +189,8 @@ export default function App() {
             onReorderPlayers={reorderPlayers}
             onReset={resetBoard}
             onClose={() => setMenuOpen(false)}
+            lightMode={lightMode}
+            onLightModeToggle={() => setLightMode(m => !m)}
           />
         )}
       </div>
@@ -198,8 +204,9 @@ export default function App() {
           onCycleNoteCell={cycleNoteCell}
           itemNotes={itemNotes}
           onSetItemNote={setItemNote}
+          lightMode={lightMode}
         />
-        <NotesArea notes={notes} onChange={setNotes} />
+        <NotesArea notes={notes} onChange={setNotes} lightMode={lightMode} />
       </div>
     </div>
   )

@@ -1,7 +1,7 @@
-export default function NotesArea({ notes, onChange }) {
+export default function NotesArea({ notes, onChange, lightMode }) {
   const wrapStyle = {
     padding: '12px 12px 24px 12px',
-    borderTop: '1px solid #292524',
+    borderTop: lightMode ? '1px solid #e7e5e4' : '1px solid #292524',
   }
 
   const labelStyle = {
@@ -16,10 +16,10 @@ export default function NotesArea({ notes, onChange }) {
   const textareaStyle = {
     width: '100%',
     height: '90px',
-    background: '#111110',
-    border: '1px solid #44403c',
+    background: lightMode ? '#f5f3f0' : '#111110',
+    border: lightMode ? '1px solid #c4c0bb' : '1px solid #44403c',
     borderRadius: '8px',
-    color: '#d6d3d1',
+    color: lightMode ? '#1c1917' : '#d6d3d1',
     fontFamily: 'monospace',
     fontSize: '13px',
     padding: '8px 10px',
