@@ -13,7 +13,9 @@
       "mcp__Claude_Preview__preview_start",
       "Bash(where npm:*)",
       "Read(//usr/bin/**)",
-      "Read(//usr/local/bin/**)"
+      "Read(//usr/local/bin/**)",
+      "Bash(where node:*)",
+      "Bash(node node_modules/vite/bin/vite.js build)"
     ]
   }
 }
