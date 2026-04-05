@@ -16,11 +16,73 @@ const NOTE_SUB_CONFIG = {
   2: { bg: '#052e16', color: '#4ade80', content: '●' },
 }
 
-export function NormalCell({ state, onClick }) {
+// Ghost 3x3 note grid shown faintly behind a normal cell
+function NoteGhost({ noteArr }) {
+  const arr = noteArr ?? [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  const hasAny = arr.some(v => v !== 0)
+  if (!hasAny) return null
+
+  return (
+    <div style={{
+      position: 'absolute',
+      inset: '3px',
+      display: 'grid',
+      gridTemplateColumns: 'repeat(3, 1fr)',
+      gridTemplateRows: 'repeat(3, 1fr)',
+      gap: '1px',
+      opacity: 0.22,
+      pointerEvents: 'none',
+    }}>
+      {arr.map((val, i) => {
+        const cfg = NOTE_SUB_CONFIG[val] ?? NOTE_SUB_CONFIG[0]
+        return (
+          <div key={i} style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: cfg.color,
+            fontSize: '7px',
+            fontWeight: 'bold',
+          }}>
+            {val !== 0 ? cfg.content : ''}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// Ghost state symbol shown faintly behind a note cell
+function StateGhost({ state }) {
+  if (!state || state === null) return null
+  const cfg = STATE_CONFIG[state]
+  if (!cfg || !cfg.content) return null
+
+  return (
+    <div style={{
+      position: 'absolute',
+      inset: 0,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      pointerEvents: 'none',
+      opacity: 0.2,
+      color: cfg.color,
+      fontSize: state === 'd2' || state === 'd3' ? '11px' : '22px',
+      fontWeight: 'bold',
+      letterSpacing: state === 'd2' || state === 'd3' ? '1px' : 'normal',
+    }}>
+      {cfg.content}
+    </div>
+  )
+}
+
+export function NormalCell({ state, noteArr, onClick }) {
   const [hovered, setHovered] = useState(false)
   const cfg = STATE_CONFIG[state] ?? STATE_CONFIG[null]
 
   const style = {
+    position: 'relative',
     width: '54px',
     height: '54px',
     background: cfg.bg,
@@ -39,6 +101,7 @@ export function NormalCell({ state, onClick }) {
     transition: 'transform 0.12s, background 0.15s',
     userSelect: 'none',
     flexShrink: 0,
+    overflow: 'hidden',
   }
 
   return (
@@ -50,15 +113,17 @@ export function NormalCell({ state, onClick }) {
       onTouchStart={() => setHovered(true)}
       onTouchEnd={() => setHovered(false)}
     >
-      {cfg.content}
+      <NoteGhost noteArr={noteArr} />
+      <span style={{ position: 'relative', zIndex: 1 }}>{cfg.content}</span>
     </div>
   )
 }
 
-export function NoteCell({ noteArr, onClickSub }) {
+export function NoteCell({ noteArr, state, onClickSub }) {
   const [hoveredSub, setHoveredSub] = useState(null)
 
   const outerStyle = {
+    position: 'relative',
     width: '54px',
     height: '54px',
     background: '#151515',
@@ -75,7 +140,8 @@ export function NoteCell({ noteArr, onClickSub }) {
 
   return (
     <div style={outerStyle}>
-      {(noteArr ?? [0,0,0,0,0,0,0,0,0]).map((val, i) => {
+      <StateGhost state={state} />
+      {(noteArr ?? [0, 0, 0, 0, 0, 0, 0, 0, 0]).map((val, i) => {
         const cfg = NOTE_SUB_CONFIG[val] ?? NOTE_SUB_CONFIG[0]
         const isHov = hoveredSub === i
         return (
@@ -85,6 +151,8 @@ export function NoteCell({ noteArr, onClickSub }) {
             onMouseEnter={() => setHoveredSub(i)}
             onMouseLeave={() => setHoveredSub(null)}
             style={{
+              position: 'relative',
+              zIndex: 1,
               background: isHov ? (val === 0 ? '#2a2a2a' : cfg.bg) : cfg.bg,
               display: 'flex',
               alignItems: 'center',
