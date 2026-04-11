@@ -3,6 +3,7 @@ import TopBar from './components/TopBar'
 import BurgerMenu from './components/BurgerMenu'
 import Grid from './components/Grid'
 import NotesArea from './components/NotesArea'
+import FAB from './components/FAB'
 import { ALL_ITEMS } from './constants'
 
 const INITIAL_PLAYERS = [{ id: 'me', name: 'Me', isMe: true }]
@@ -76,9 +77,53 @@ export default function App() {
     return result
   })
   const [menuOpen, setMenuOpen] = useState(false)
+  const [locked, setLocked] = useState(false)
+  const [canUndo, setCanUndo] = useState(false)
+  const [canRedo, setCanRedo] = useState(false)
+
   const menuRef = useRef(null)
   const enabledStatesRef = useRef(enabledStates)
   useEffect(() => { enabledStatesRef.current = enabledStates }, [enabledStates])
+
+  // Refs to current grid/noteGrid for history snapshots
+  const gridRef = useRef(grid)
+  const noteGridRef = useRef(noteGrid)
+  useEffect(() => { gridRef.current = grid }, [grid])
+  useEffect(() => { noteGridRef.current = noteGrid }, [noteGrid])
+
+  // Undo/redo stacks — not persisted across refresh
+  const undoStackRef = useRef([])
+  const redoStackRef = useRef([])
+
+  const pushHistory = useCallback(() => {
+    const snapshot = { grid: gridRef.current, noteGrid: noteGridRef.current }
+    undoStackRef.current = [...undoStackRef.current.slice(-49), snapshot]
+    redoStackRef.current = []
+    setCanUndo(true)
+    setCanRedo(false)
+  }, [])
+
+  const undo = useCallback(() => {
+    if (undoStackRef.current.length === 0) return
+    const prev = undoStackRef.current[undoStackRef.current.length - 1]
+    redoStackRef.current = [...redoStackRef.current, { grid: gridRef.current, noteGrid: noteGridRef.current }]
+    undoStackRef.current = undoStackRef.current.slice(0, -1)
+    setGrid(prev.grid)
+    setNoteGrid(prev.noteGrid)
+    setCanUndo(undoStackRef.current.length > 0)
+    setCanRedo(true)
+  }, [])
+
+  const redo = useCallback(() => {
+    if (redoStackRef.current.length === 0) return
+    const next = redoStackRef.current[redoStackRef.current.length - 1]
+    undoStackRef.current = [...undoStackRef.current, { grid: gridRef.current, noteGrid: noteGridRef.current }]
+    redoStackRef.current = redoStackRef.current.slice(0, -1)
+    setGrid(next.grid)
+    setNoteGrid(next.noteGrid)
+    setCanUndo(true)
+    setCanRedo(redoStackRef.current.length > 0)
+  }, [])
 
   // Persist all state to localStorage whenever anything changes
   useEffect(() => {
@@ -130,6 +175,8 @@ export default function App() {
   }, [])
 
   const cycleCell = useCallback((playerId, item) => {
+    if (locked) return
+    pushHistory()
     const ALL_STATES = [null, 'tick', 'cross', 'q', 'd1', 'd2', 'd3']
     const es = enabledStatesRef.current
     const STATES = ALL_STATES.filter(s => s === null || s === 'tick' || s === 'cross' || es[s] !== false)
@@ -142,9 +189,11 @@ export default function App() {
         [playerId]: { ...prev[playerId], [item]: next }
       }
     })
-  }, [])
+  }, [locked, pushHistory])
 
   const cycleNoteCell = useCallback((playerId, item, subIdx) => {
+    if (locked) return
+    pushHistory()
     setNoteGrid(prev => {
       const arr = [...(prev[playerId]?.[item] ?? [0,0,0,0,0,0,0,0,0])]
       arr[subIdx] = (arr[subIdx] + 1) % 3
@@ -153,7 +202,7 @@ export default function App() {
         [playerId]: { ...prev[playerId], [item]: arr }
       }
     })
-  }, [])
+  }, [locked, pushHistory])
 
   const reorderPlayers = useCallback((playerId, toIdx) => {
     setPlayers(prev => {
@@ -168,6 +217,10 @@ export default function App() {
   }, [])
 
   const resetBoard = useCallback(() => {
+    undoStackRef.current = []
+    redoStackRef.current = []
+    setCanUndo(false)
+    setCanRedo(false)
     setGrid(buildEmptyGrid(players))
     setNoteGrid(buildEmptyNoteGrid(players))
     setNotes('')
@@ -225,6 +278,15 @@ export default function App() {
         />
         <NotesArea notes={notes} onChange={setNotes} lightMode={lightMode} />
       </div>
+      <FAB
+        canUndo={canUndo}
+        canRedo={canRedo}
+        locked={locked}
+        onUndo={undo}
+        onRedo={redo}
+        onToggleLock={() => setLocked(l => !l)}
+        lightMode={lightMode}
+      />
     </div>
   )
 }
